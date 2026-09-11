@@ -1,0 +1,18 @@
+{
+  "project_name": "fishing-tackle-lift",
+  "use_case": "Automate a company fishing-tackle lifting mechanism so it can raise a payload to a target height and hold it steadily.",
+  "mechanism_asset_path": null,
+  "payload_asset_path": null,
+  "cable_asset_path": null,
+  "environment_asset_path": null,
+  "lift_joint_name": null,
+  "end_effector_body_name": null,
+  "payload_mass_kg": 1.0,
+  "safe_working_load_kg": null,
+  "initial_height_m": 0.05,
+  "target_height_m": 0.5,
+  "max_lift_speed_mps": 0.25,
+  "episode_length_s": 10.0,
+  "num_envs": 512,
+  "attachment_mode": "fixed_joint_curriculum"
+}

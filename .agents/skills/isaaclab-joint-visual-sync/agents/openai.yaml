@@ -1,0 +1,4 @@
+interface:
+  display_name: "Isaac Lab Joint Visual Sync"
+  short_description: "Diagnose moving joint states with a frozen viewport"
+  default_prompt: "Use $isaaclab-joint-visual-sync to diagnose why Isaac Lab joint states move while the robot model stays visually frozen."

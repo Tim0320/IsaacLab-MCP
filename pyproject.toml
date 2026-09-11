@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "isaaclab-mcp-server"
+dynamic = ["version"]
+description = "MCP tools for NVIDIA Isaac Lab environment discovery and workflows"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Tim0320" }]
+keywords = ["mcp", "isaac-lab", "isaac-sim", "robotics", "reinforcement-learning"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "mcp[cli]>=1.28.1,<2",
+    "pydantic>=2.11,<3",
+]
+
+[dependency-groups]
+dev = [
+    "build",
+    "pre-commit",
+    "pytest",
+    "ruff==0.16.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/Tim0320/IsaacLab-MCP"
+Repository = "https://github.com/Tim0320/IsaacLab-MCP"
+Issues = "https://github.com/Tim0320/IsaacLab-MCP/issues"
+
+[project.scripts]
+isaaclab-mcp-server = "isaaclab_mcp.server:main"
+
+[tool.hatch.version]
+path = "isaaclab_mcp/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["isaaclab_mcp/"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["isaaclab_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "unit: tests that do not require Isaac Lab or Isaac Sim",
+    "live: tests that launch the configured Isaac Lab runtime",
+]

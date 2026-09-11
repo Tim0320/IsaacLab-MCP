@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Virtual environments and local configuration
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Test and tool caches
+.coverage
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+
+# Isaac Lab outputs
+logs/
+outputs/
+runs/
+checkpoints/
+.pretrained_checkpoints/
+*.pt
+*.pth
+training_projects/
+artifacts/
+
+# MCP clients and editors
+.mcp.json
+mcp-inspector*.json
+.vscode/
+.idea/
+.cursor/
+.claude/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
