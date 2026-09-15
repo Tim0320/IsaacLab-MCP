@@ -19,6 +19,9 @@ MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP se
 | `design_people_rl_program` | 規劃 G1 跑步、拿取、追人三項技能並回報各自的 RL readiness | MCP Python，唯讀 |
 | `create_lifting_training_project` | 預覽或產生 training design packet，預設 `preview=true` | MCP Python，寫入指定 training root |
 | `validate_lifting_training_project` | 驗證 packet schema、資產參照與 training readiness | MCP Python，唯讀 |
+| `validate_environment_contract` | 驗證 Isaac Sim → Isaac Lab 的版本化環境資料契約 | MCP Python，唯讀 |
+| `validate_evidence_bundle` | 驗證 evidence 是否鎖定指定 environment、run、checkpoint 與 criteria | MCP Python，唯讀 |
+| `validate_scene_change_request` | 驗證 Lab → Sim 的受控能力請求 | MCP Python，唯讀 |
 
 `list_isaac_lab_tasks` 是靜態 discovery，不會啟動 Kit；動態產生的 registry 項目不在此階段保證完整。
 
@@ -30,6 +33,10 @@ MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP se
 4. 呼叫 `validate_lifting_training_project`，重新檢查 schema 與目前資產是否存在。
 
 預設輸出到 `training_projects/<project-name>/`，此資料夾已排除在 Git 外，避免公司資產路徑或內部訓練資訊意外提交。可用 `ISAACLAB_MCP_TRAINING_ROOT` 改到其他位置。
+
+## Multi-Agent Protocol
+
+Protocol v1 以 `EnvironmentContract`、`TrainingRunRecord`、`EvidenceBundle` 與 `SceneChangeRequest` 建立 Sim → Lab → Verification → Correction 的版本化交接。MCP 現在提供三個純 Python、唯讀的 validator；它們不啟動 Kit、training job 或修改 USD。完整規格位於 [`docs/MULTI_AGENT_PROTOCOL.md`](docs/MULTI_AGENT_PROTOCOL.md)。
 
 釣具吊升輸入範例位於 [`examples/fishing_tackle_lift_request.json`](examples/fishing_tackle_lift_request.json)。
 完整設計原理見 [`docs/TRAINING_DESIGN_LOGIC.md`](docs/TRAINING_DESIGN_LOGIC.md)。

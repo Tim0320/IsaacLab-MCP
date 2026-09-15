@@ -1,0 +1,3 @@
+interface:
+  display_name: "Isaac Lab Protocol"
+  short_description: "驗證跨 Agent 的訓練資料契約"

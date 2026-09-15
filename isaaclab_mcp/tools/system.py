@@ -22,6 +22,9 @@ def register_system_tools(mcp: Any) -> None:
                 "design_lifting_training": "implemented; creates a validated RL design",
                 "create_lifting_training_project": "implemented; preview defaults to true",
                 "validate_lifting_training_project": "implemented; checks schema and asset readiness",
+                "validate_environment_contract": "implemented; read-only Sim-to-Lab contract validation",
+                "validate_evidence_bundle": "implemented; read-only verification-target validation",
+                "validate_scene_change_request": "implemented; read-only Lab-to-Sim request validation",
             },
             "runtime_execution": {
                 "support": "manual CLI task is implemented; MCP job-control tools are not implemented",

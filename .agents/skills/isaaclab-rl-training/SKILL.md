@@ -13,6 +13,7 @@ description: Design, implement, train, and independently validate Isaac Lab rein
 - `D:\IsaacLab` 是 Isaac Lab 3.0.0 runtime/reference：只讀取它的 launcher 和 API，不修改、清理或複製其中的檔案。
 - Kit-bound 程式使用 `C:\isaacsim\python.bat` 或本專案既有 PowerShell launcher。訓練保持可見，不使用 `--headless`。
 - 若 joint 數值有變但 RTX 模型沒有動，改用 `$isaaclab-joint-visual-sync`，不要把它當作 PPO 或 reward 問題。
+- 若要交接 Sim 場景事實、訓練結果或驗證證據，改用 `$isaaclab-protocol-contracts`；其現有 MCP tools 只驗證文件，不能啟動訓練或直接改場景。
 
 ## 建立新訓練的順序
 

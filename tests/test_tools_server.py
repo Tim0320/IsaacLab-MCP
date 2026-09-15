@@ -30,7 +30,10 @@ def test_registers_initial_named_tools():
         "get_isaac_lab_capabilities",
         "get_isaac_lab_status",
         "list_isaac_lab_tasks",
+        "validate_environment_contract",
+        "validate_evidence_bundle",
         "validate_lifting_training_project",
+        "validate_scene_change_request",
     }
 
 
