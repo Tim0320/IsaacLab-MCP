@@ -6,7 +6,7 @@
 
 ## 架構
 
-MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP server 行程。Dofbot 的受限 MCP worker 會再以 `C:\isaacsim\python.bat` 啟動可見 Isaac Lab；其他 task 仍維持手動 launcher。
+MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP server 行程。Dofbot 的受限 MCP worker 會再以 `C:\isaacsim\python.bat` 啟動可見 Isaac Lab 訓練或 policy evaluation；其他 task 仍維持手動 launcher。
 
 目前 named tools：
 
@@ -25,6 +25,9 @@ MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP se
 | `submit_dofbot_training_run` | 提交白名單 Dofbot grasp／lift 訓練 | 可見 Kit、CUDA 0、固定 15 秒 `RecordVideo` |
 | `get_training_run_status` | 讀取持久化 job 狀態與 artifacts | MCP Python，唯讀 |
 | `cancel_training_run` | 要求 worker 停止其 own launcher process tree | MCP Python，受限寫入 |
+| `evaluate_training_run` | 以已完成 job 的 hash-verified checkpoint 執行獨立評估 | 可見 Kit、CUDA 0、固定 15 秒 `RecordVideo` |
+| `get_evaluation_status` | 讀取 metrics、MP4、EvidenceBundle 與 `PASS`／`FIX_REQUIRED` | MCP Python，唯讀 |
+| `cancel_evaluation` | 要求 worker 停止其 own evaluator process tree | MCP Python，受限寫入 |
 
 `list_isaac_lab_tasks` 是靜態 discovery，不會啟動 Kit；動態產生的 registry 項目不在此階段保證完整。
 
@@ -39,7 +42,7 @@ MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP se
 
 ## Multi-Agent Protocol
 
-Protocol v1 以 `EnvironmentContract`、`TrainingRunRecord`、`EvidenceBundle` 與 `SceneChangeRequest` 建立 Sim → Lab → Verification → Correction 的版本化交接。三個 validator 維持純 Python、唯讀；另有僅支援 Dofbot 的受限可見 runner，不讀寫 USD。完整規格位於 [`docs/MULTI_AGENT_PROTOCOL.md`](docs/MULTI_AGENT_PROTOCOL.md)，執行順序見 [`docs/VERTICAL_TRAINING_WORKFLOW.md`](docs/VERTICAL_TRAINING_WORKFLOW.md)。
+Protocol v1 以 `EnvironmentContract`、`TrainingRunRecord`、`EvidenceBundle` 與 `SceneChangeRequest` 建立 Sim → Lab → Verification → Correction 的版本化交接。三個 validator 維持純 Python、唯讀；另有僅支援 Dofbot 的受限可見 training/evaluation workers，不讀寫 USD。完整規格位於 [`docs/MULTI_AGENT_PROTOCOL.md`](docs/MULTI_AGENT_PROTOCOL.md)，執行順序見 [`docs/VERTICAL_TRAINING_WORKFLOW.md`](docs/VERTICAL_TRAINING_WORKFLOW.md)。
 
 釣具吊升輸入範例位於 [`examples/fishing_tackle_lift_request.json`](examples/fishing_tackle_lift_request.json)。
 完整設計原理見 [`docs/TRAINING_DESIGN_LOGIC.md`](docs/TRAINING_DESIGN_LOGIC.md)。

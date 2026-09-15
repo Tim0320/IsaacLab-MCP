@@ -77,6 +77,8 @@ Isaac Sim 6.0.1 預設資產：
 & 'C:\isaacsim\python.bat' '.\scripts\evaluate_dofbot_grasp_policy.py' `
   --task-stage grasp --checkpoint '<model_39.pt>' `
   --num-envs 4 --steps 1000 `
+  --video-length 750 `
+  --video-dir '.\artifacts\dofbot_safe_approach_model39_video' `
   --output '.\artifacts\dofbot_safe_approach_model39_visible_evaluation.json' `
   --capture '.\artifacts\dofbot_safe_approach_model39_visible.png' `
   --viz kit --device cuda:0 `

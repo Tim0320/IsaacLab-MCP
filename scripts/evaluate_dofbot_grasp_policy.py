@@ -16,11 +16,22 @@ parser.add_argument("--checkpoint", type=Path, required=True)
 parser.add_argument("--task-stage", choices=("grasp", "lift"), default="grasp")
 parser.add_argument("--num-envs", type=int, default=32)
 parser.add_argument("--steps", type=int, default=800)
+parser.add_argument("--seed", type=int, default=42)
+parser.add_argument("--video-length", type=int, default=750)
+parser.add_argument("--video-dir", type=Path, required=True)
 parser.add_argument("--capture", type=Path)
-parser.add_argument("--output", type=Path)
+parser.add_argument("--output", type=Path, required=True)
 AppLauncher.add_app_launcher_args(parser)
 args_cli = parser.parse_args()
 
+if getattr(args_cli, "headless", False):
+    parser.error("This project requires a visible Kit window; --headless is not allowed.")
+if not 500 <= args_cli.video_length <= 1000:
+    parser.error("--video-length must produce a 10-20 second clip at 50 FPS (500-1000 frames).")
+if args_cli.steps < args_cli.video_length:
+    parser.error("--steps must be greater than or equal to --video-length.")
+
+args_cli.enable_cameras = True
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
@@ -42,9 +53,8 @@ from isaaclab_mcp.runtime_tasks.dofbot_cube_lift.env_cfg import (
 
 
 def _write_output(payload: dict) -> None:
-    if args_cli.output:
-        args_cli.output.parent.mkdir(parents=True, exist_ok=True)
-        args_cli.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    args_cli.output.parent.mkdir(parents=True, exist_ok=True)
+    args_cli.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> int:
@@ -56,8 +66,18 @@ def main() -> int:
     cfg = DofbotCubeGraspEnvCfg() if grasp_stage else DofbotCubeLiftEnvCfg()
     cfg.scene.num_envs = args_cli.num_envs
     cfg.sim.device = args_cli.device
+    cfg.seed = args_cli.seed
 
-    base_env = gym.make(task_id, cfg=cfg)
+    video_dir = args_cli.video_dir.resolve()
+    video_dir.mkdir(parents=True, exist_ok=True)
+    base_env = gym.make(task_id, cfg=cfg, render_mode="rgb_array")
+    base_env = gym.wrappers.RecordVideo(
+        base_env,
+        video_folder=str(video_dir),
+        step_trigger=lambda step: step == 0,
+        video_length=args_cli.video_length,
+        disable_logger=True,
+    )
     env = RslRlVecEnvWrapper(base_env, clip_actions=None)
     progress["state"] = "environment_ready"
     _write_output(progress)
@@ -145,6 +165,9 @@ def main() -> int:
             "device": str(env.unwrapped.device),
             "num_envs": args_cli.num_envs,
             "steps": args_cli.steps,
+            "seed": args_cli.seed,
+            "video_length": args_cli.video_length,
+            "video_directory": str(video_dir),
             "total_policy_samples": total_samples,
             "episode_completions": episode_completions,
             "mean_reward_per_step": reward_sum / total_samples,

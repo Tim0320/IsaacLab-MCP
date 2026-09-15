@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
+from isaaclab_mcp.evaluation_jobs import cancel_evaluation, evaluate_training_run, get_evaluation_status
 from isaaclab_mcp.training_jobs import cancel_training_run, get_training_run_status, submit_dofbot_training_run
 
 
@@ -38,3 +39,18 @@ def register_job_tools(mcp: Any) -> None:
     def cancel_training_run_tool(job_id: str) -> dict[str, Any]:
         """Ask the worker to stop only the launcher process it owns."""
         return cancel_training_run(job_id)
+
+    @mcp.tool("evaluate_training_run")
+    def evaluate_training_run_tool(job_id: str, num_envs: int = 4, steps: int = 800) -> dict[str, Any]:
+        """Evaluate one completed Dofbot job in visible Kit and save a 15-second MP4 plus EvidenceBundle."""
+        return evaluate_training_run(job_id, num_envs=num_envs, steps=steps)
+
+    @mcp.tool("get_evaluation_status")
+    def get_evaluation_status_tool(evaluation_id: str) -> dict[str, Any]:
+        """Read durable metrics, evidence paths, and PASS or FIX_REQUIRED state for one evaluation."""
+        return get_evaluation_status(evaluation_id)
+
+    @mcp.tool("cancel_evaluation")
+    def cancel_evaluation_tool(evaluation_id: str) -> dict[str, Any]:
+        """Ask the evaluation worker to stop only the Isaac Sim process it owns."""
+        return cancel_evaluation(evaluation_id)

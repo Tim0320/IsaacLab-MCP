@@ -14,7 +14,7 @@ def register_system_tools(mcp: Any) -> None:
     def get_isaac_lab_capabilities() -> dict[str, Any]:
         """Return the implemented IsaacLab-MCP capability boundary."""
         return {
-            "server_stage": "restricted-dofbot-job-control",
+            "server_stage": "restricted-dofbot-training-evaluation-loop",
             "named_tools": {
                 "get_isaac_lab_capabilities": "implemented",
                 "get_isaac_lab_status": "implemented and read-only",
@@ -28,16 +28,26 @@ def register_system_tools(mcp: Any) -> None:
                 "submit_dofbot_training_run": "implemented; allow-listed visible Dofbot runner with mandatory RecordVideo",
                 "get_training_run_status": "implemented; reads durable job state and artifacts",
                 "cancel_training_run": "implemented; requests cancellation through a worker-owned control file",
+                "evaluate_training_run": "implemented; verifies a completed Dofbot checkpoint and starts visible evaluation",
+                "get_evaluation_status": "implemented; returns metrics, evidence artifacts, and the policy verdict",
+                "cancel_evaluation": "implemented; requests cancellation through an evaluation-worker control file",
             },
             "runtime_execution": {
-                "support": "MCP job control is limited to two visible Dofbot tasks; other tasks remain manual CLI only",
+                "support": "MCP training and policy evaluation are limited to two visible Dofbot tasks; other tasks remain manual CLI only",
                 "required_route": "C:\\isaacsim\\python.bat",
                 "verified_tasks": ["Isaac-Lift-Cube-Dofbot-v0", "Isaac-Reach-TM6S-Lift-Proxy-v0"],
-                "implemented_named_tools": ["submit_dofbot_training_run", "get_training_run_status", "cancel_training_run"],
+                "implemented_named_tools": [
+                    "submit_dofbot_training_run",
+                    "get_training_run_status",
+                    "cancel_training_run",
+                    "evaluate_training_run",
+                    "get_evaluation_status",
+                    "cancel_evaluation",
+                ],
             },
             "limitations": [
                 "Static task discovery does not guarantee dynamically generated registry entries.",
-                "The runner does not evaluate policy quality; Verification Agent evidence remains a separate gate.",
+                "Policy evaluation is currently criterion-based only for the two Dofbot tasks.",
                 "Generated design packets require validated company assets before runtime code generation.",
             ],
         }

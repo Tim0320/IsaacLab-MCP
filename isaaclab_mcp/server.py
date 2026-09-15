@@ -12,8 +12,8 @@ from isaaclab_mcp.tools import register_all_tools
 
 _INSTRUCTIONS = """
 Use this server for Isaac Lab environment inspection and workflows.
-It provides read-only inspection plus a restricted visible Dofbot job runner.
-Only treat a run as completed when get_training_run_status returns a completed state with its TrainingRunRecord; policy quality still requires independent verification evidence.
+It provides read-only inspection plus a restricted visible Dofbot training and policy-evaluation loop.
+Only treat training as completed when get_training_run_status returns a completed TrainingRunRecord. Only treat policy behavior as passed when get_evaluation_status returns PASS with its EvidenceBundle and recorded MP4.
 """.strip()
 
 _LOCAL_HTTP_HOSTS = ("localhost", "localhost:*", "127.0.0.1", "127.0.0.1:*", "[::1]", "[::1]:*")

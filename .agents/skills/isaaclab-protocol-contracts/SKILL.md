@@ -1,6 +1,6 @@
 ---
 name: isaaclab-protocol-contracts
-description: Create, validate, and route Isaac Sim/Isaac Lab multi-agent protocol documents in this repository. Use for EnvironmentContract, TrainingRunRecord, EvidenceBundle, SceneChangeRequest, version linkage, or evidence handoffs; do not use to launch training or directly edit a USD scene.
+description: Create, validate, and route Isaac Sim/Isaac Lab multi-agent protocol documents in this repository. Use for EnvironmentContract, TrainingRunRecord, EvidenceBundle, SceneChangeRequest, version linkage, evidence handoffs, or the restricted Dofbot training/evaluation loop; never directly edit a USD scene.
 ---
 
 # Isaac Lab Protocol Contracts
@@ -14,13 +14,14 @@ description: Create, validate, and route Isaac Sim/Isaac Lab multi-agent protoco
 - 實作與文件在 `F:\IsaacLab-MCP`；`D:\IsaacLab` 是 runtime/reference，只讀。
 - `validate_environment_contract`、`validate_evidence_bundle`、`validate_scene_change_request` 是純資料驗證：不啟動 Kit、訓練、不讀寫 USD，也不會替任何 Agent 產生成功證據。
 - `submit_dofbot_training_run` 只支援兩個 allow-listed Dofbot task，固定使用可見 Kit、CUDA 0 與約 15 秒 `RecordVideo`。它不接受任意 command、路徑或 `--headless`，也不代表其他 Isaac Lab task 已 MCP 化。
+- `evaluate_training_run` 只接受 completed training `job_id`，從 `TrainingRunRecord` 取出 checkpoint 並驗證 SHA-256；不可傳入任意 checkpoint 路徑。評估同樣使用可見 Kit 與約 15 秒 `RecordVideo`。
 - Isaac Sim Engineer 擁有場景與物理事實；Isaac Lab Engineer 只能引用已驗證的 `EnvironmentContract`，不能猜測或覆寫 USD、drive、collision 或 joint limit。
 
 ## 交接順序
 
 1. **Sim → Lab：EnvironmentContract**：先填資產 URI/hash、prim path、關節名稱與 limits、控制與物理 timestep、物理 read-back，再呼叫 `validate_environment_contract`。失敗時回給場景擁有者修正。
 2. **Lab → Verification：TrainingRunRecord**：以 `submit_dofbot_training_run` 啟動的 Dofbot job 在實際結束後會自動寫入 record；`get_training_run_status` 回傳路徑。`status=completed` 必須同時帶 checkpoint 和影片，否則 worker 標記 failed。
-3. **Verification → Orchestrator：EvidenceBundle**：每個成功條件都填 pass/fail 與對應 artifact。`decision=PASS` 時，所有 criteria 必須通過；否則使用 `FIX` 或 `RETHINK`。
+3. **Verification → Orchestrator：EvidenceBundle**：呼叫 `evaluate_training_run(job_id)`，再用 `get_evaluation_status(evaluation_id)` 等待 terminal state。只有 metrics JSON 與 MP4 都存在才會建立 bundle；全部 criteria 通過才是 `PASS`，否則是 `FIX_REQUIRED`。`RETHINK` 由 Orchestrator 根據多次證據判斷。
 4. **Lab → Sim：SceneChangeRequest**：當 reward、觀測或 action 已無法合理補救時，提出請求而非直接改場景。它必須列出原因、預期影響、風險與 rollback；以 `validate_scene_change_request` 先驗證格式。
 
 ## 版本完整性
