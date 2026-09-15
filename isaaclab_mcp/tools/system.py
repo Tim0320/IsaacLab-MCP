@@ -14,7 +14,7 @@ def register_system_tools(mcp: Any) -> None:
     def get_isaac_lab_capabilities() -> dict[str, Any]:
         """Return the implemented IsaacLab-MCP capability boundary."""
         return {
-            "server_stage": "training-authoring",
+            "server_stage": "restricted-dofbot-job-control",
             "named_tools": {
                 "get_isaac_lab_capabilities": "implemented",
                 "get_isaac_lab_status": "implemented and read-only",
@@ -25,16 +25,19 @@ def register_system_tools(mcp: Any) -> None:
                 "validate_environment_contract": "implemented; read-only Sim-to-Lab contract validation",
                 "validate_evidence_bundle": "implemented; read-only verification-target validation",
                 "validate_scene_change_request": "implemented; read-only Lab-to-Sim request validation",
+                "submit_dofbot_training_run": "implemented; allow-listed visible Dofbot runner with mandatory RecordVideo",
+                "get_training_run_status": "implemented; reads durable job state and artifacts",
+                "cancel_training_run": "implemented; requests cancellation through a worker-owned control file",
             },
             "runtime_execution": {
-                "support": "manual CLI task is implemented; MCP job-control tools are not implemented",
+                "support": "MCP job control is limited to two visible Dofbot tasks; other tasks remain manual CLI only",
                 "required_route": "C:\\isaacsim\\python.bat",
                 "verified_tasks": ["Isaac-Lift-Cube-Dofbot-v0", "Isaac-Reach-TM6S-Lift-Proxy-v0"],
-                "planned_named_tools": ["train", "play", "job status", "cancel job", "metrics"],
+                "implemented_named_tools": ["submit_dofbot_training_run", "get_training_run_status", "cancel_training_run"],
             },
             "limitations": [
                 "Static task discovery does not guarantee dynamically generated registry entries.",
-                "No tool starts Isaac Sim, training, or a live environment in this skeleton.",
+                "The runner does not evaluate policy quality; Verification Agent evidence remains a separate gate.",
                 "Generated design packets require validated company assets before runtime code generation.",
             ],
         }

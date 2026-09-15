@@ -6,7 +6,7 @@
 
 ## 架構
 
-MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP server 行程。Isaac Lab runtime task 目前以 `C:\isaacsim\python.bat` 啟動；MCP 子行程 launcher 尚未實作。
+MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP server 行程。Dofbot 的受限 MCP worker 會再以 `C:\isaacsim\python.bat` 啟動可見 Isaac Lab；其他 task 仍維持手動 launcher。
 
 目前 named tools：
 
@@ -22,6 +22,9 @@ MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP se
 | `validate_environment_contract` | 驗證 Isaac Sim → Isaac Lab 的版本化環境資料契約 | MCP Python，唯讀 |
 | `validate_evidence_bundle` | 驗證 evidence 是否鎖定指定 environment、run、checkpoint 與 criteria | MCP Python，唯讀 |
 | `validate_scene_change_request` | 驗證 Lab → Sim 的受控能力請求 | MCP Python，唯讀 |
+| `submit_dofbot_training_run` | 提交白名單 Dofbot grasp／lift 訓練 | 可見 Kit、CUDA 0、固定 15 秒 `RecordVideo` |
+| `get_training_run_status` | 讀取持久化 job 狀態與 artifacts | MCP Python，唯讀 |
+| `cancel_training_run` | 要求 worker 停止其 own launcher process tree | MCP Python，受限寫入 |
 
 `list_isaac_lab_tasks` 是靜態 discovery，不會啟動 Kit；動態產生的 registry 項目不在此階段保證完整。
 
@@ -36,7 +39,7 @@ MCP server 在獨立 Python `.venv` 執行，避免把 Kit runtime 載入 MCP se
 
 ## Multi-Agent Protocol
 
-Protocol v1 以 `EnvironmentContract`、`TrainingRunRecord`、`EvidenceBundle` 與 `SceneChangeRequest` 建立 Sim → Lab → Verification → Correction 的版本化交接。MCP 現在提供三個純 Python、唯讀的 validator；它們不啟動 Kit、training job 或修改 USD。完整規格位於 [`docs/MULTI_AGENT_PROTOCOL.md`](docs/MULTI_AGENT_PROTOCOL.md)。
+Protocol v1 以 `EnvironmentContract`、`TrainingRunRecord`、`EvidenceBundle` 與 `SceneChangeRequest` 建立 Sim → Lab → Verification → Correction 的版本化交接。三個 validator 維持純 Python、唯讀；另有僅支援 Dofbot 的受限可見 runner，不讀寫 USD。完整規格位於 [`docs/MULTI_AGENT_PROTOCOL.md`](docs/MULTI_AGENT_PROTOCOL.md)，執行順序見 [`docs/VERTICAL_TRAINING_WORKFLOW.md`](docs/VERTICAL_TRAINING_WORKFLOW.md)。
 
 釣具吊升輸入範例位於 [`examples/fishing_tackle_lift_request.json`](examples/fishing_tackle_lift_request.json)。
 完整設計原理見 [`docs/TRAINING_DESIGN_LOGIC.md`](docs/TRAINING_DESIGN_LOGIC.md)。
@@ -166,5 +169,5 @@ uv build
 
 - 不修改 `D:\IsaacLab` 的 source tree。
 - 不把 API keys、`.env`、MCP client 設定、training logs 或 checkpoints 納入 Git。
-- MCP tools 目前仍只產生 training design packet，尚未提供啟動、停止或監看 training job 的 named tool。
+- MCP job-control 目前只支援兩個 Dofbot task：可提交、監看與取消；G1、TM6S 與新公司資產仍需明確新增 allow-listed runner。
 - 專案已包含一個可由 Isaac Lab CLI 載入的 TM6S runtime smoke task；它與 MCP job-control 能力分開。

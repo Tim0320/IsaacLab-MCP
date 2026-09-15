@@ -12,8 +12,8 @@ from isaaclab_mcp.tools import register_all_tools
 
 _INSTRUCTIONS = """
 Use this server for Isaac Lab environment inspection and workflows.
-The current skeleton provides read-only status and static task discovery.
-Do not claim that a simulation or training job ran unless a future runtime tool returns execution evidence.
+It provides read-only inspection plus a restricted visible Dofbot job runner.
+Only treat a run as completed when get_training_run_status returns a completed state with its TrainingRunRecord; policy quality still requires independent verification evidence.
 """.strip()
 
 _LOCAL_HTTP_HOSTS = ("localhost", "localhost:*", "127.0.0.1", "127.0.0.1:*", "[::1]", "[::1]:*")

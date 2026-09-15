@@ -39,4 +39,4 @@
 - `validate_evidence_bundle`
 - `validate_scene_change_request`
 
-它們不啟動 Kit、不讀取或修改 USD、不寫檔，也不啟動 training job。下一個 execution milestone 才會讓 training job 產生 `TrainingRunRecord`。
+它們不啟動 Kit、不讀取或修改 USD，也不寫入 scene。Dofbot 的受限 execution milestone 已提供 `submit_dofbot_training_run`：它只允許兩個白名單 task，以可見 Kit 和約 15 秒 `RecordVideo` 執行，worker 在找到 checkpoint 與 MP4 後才寫出 `TrainingRunRecord`。其他 task 仍沒有 MCP job-control。

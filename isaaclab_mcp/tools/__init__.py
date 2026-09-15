@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from isaaclab_mcp.tools.jobs import register_job_tools
 from isaaclab_mcp.tools.protocol import register_protocol_tools
 from isaaclab_mcp.tools.system import register_system_tools
 from isaaclab_mcp.tools.tasks import register_task_tools
@@ -16,3 +17,4 @@ def register_all_tools(mcp: Any) -> None:
     register_task_tools(mcp)
     register_training_tools(mcp)
     register_protocol_tools(mcp)
+    register_job_tools(mcp)
